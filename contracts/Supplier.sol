@@ -38,7 +38,7 @@ contract Supplier {
     struct Location {
         uint id;
         string deliveryAddress;
-        string name;
+        string description;
         bool isDeleted;
     }
 
@@ -72,6 +72,8 @@ contract Supplier {
         CreateItem("Carrots", "10", "Kg", "Checkers", 0);
         CreateItem("Rice", "200", "g", "Woolworths", 0);
         CreateTask(1000, 0, 0, taskStatus.Initial);
+        CreateTask(1000, 0, 0, taskStatus.InProgress);
+        CreateTask(1000, 0, 0, taskStatus.EnRoute);
     }
 
     // #region Create entity entries
@@ -85,8 +87,8 @@ contract Supplier {
         taskCount++;
     }
 
-    function CreateLocation (string memory _address, string memory _name) public {
-        locations[locationCount] = Location(locationCount, _address, _name, false);
+    function CreateLocation (string memory _address, string memory _description) public {
+        locations[locationCount] = Location(locationCount, _address, _description, false);
         locationCount++;
     }
 
