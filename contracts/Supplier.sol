@@ -65,17 +65,6 @@ contract Supplier {
     mapping(uint => Location) public locations;
     mapping(uint => Supplier) public suppliers;
 
-    constructor() public {
-        CreateSupplier("Sidlasonke solutions", region.GP);
-        CreateLocation("107 3rd Rd, Hyde Park, Sandton, 2196", "Hyde Park High School");
-        CreateItem("Peaches", "5", "Kg", "Pick n Pay", 0);
-        CreateItem("Carrots", "10", "Kg", "Checkers", 0);
-        CreateItem("Rice", "200", "g", "Woolworths", 0);
-        CreateTask(1000, 0, 0, taskStatus.Initial);
-        CreateTask(1000, 0, 0, taskStatus.InProgress);
-        CreateTask(1000, 0, 0, taskStatus.EnRoute);
-    }
-
     // #region Create entity entries
     function CreateItem (string memory _item, string memory _quantity, string memory _uom, string memory _source, uint _taskId) public {
         items[itemCount] = Item(itemCount, _item, _quantity, _uom, _source, _taskId, false); 
