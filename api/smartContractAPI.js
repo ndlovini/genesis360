@@ -10,6 +10,7 @@ function routes(app, contract, accounts) {
         res.send("Smart Contract API");
     });
     
+    // Read tasks data from the blockchain
     app.get(apiPath + '/tasks', function (req, res) {
         var tasks = [];
         contract.taskCount()
@@ -25,6 +26,7 @@ function routes(app, contract, accounts) {
         });
     });
     
+    // Read items per task data from the blockchain
     app.get(apiPath + '/taskItems', function (req, res) {
         var items = [];
         contract.itemCount()
@@ -40,6 +42,7 @@ function routes(app, contract, accounts) {
         });
     });
     
+    // Read supplier data from the blockchain
     app.get(apiPath + '/suppliers', function (req, res) {
         var suppliers = [];
         contract.supplierCount()
@@ -55,6 +58,7 @@ function routes(app, contract, accounts) {
         });
     });
     
+    // Read locations data from the blockchain
     app.get(apiPath + '/locations', function (req, res) {
         var locations = [];
         contract.locationCount()
@@ -168,7 +172,7 @@ function routes(app, contract, accounts) {
             return
         } 
 
-        contract.CreateItem(
+        contract.CreateLocation(
             req.body.address, 
             req.body.description,
             {from: accounts[0]})
@@ -180,30 +184,197 @@ function routes(app, contract, accounts) {
         });
     });
     
-    app.put(apiPath + '/tasks', function (req, res) {
-        res.send('Got a PUT request at /tasks');
+    // Update task status on the blockchain
+    app.put(apiPath + '/task/:taskId', function (req, res) {
+        let taskId = req.params.taskId;
+        let taskStatus = req.body.taskStatus;
+
+        if (typeof taskId != "string" ||
+            typeof taskStatus != "number") {
+            res.status(400).json({ error: 'malformed payload'});
+            return;
+        }
+        
+        contract.UpdateTaskStatus( 
+            taskStatus,
+            taskId,
+            {from: accounts[0]})
+        .then( response => {
+            if (response)
+                res.send("success");
+            else
+                res.status(500).json({ error: 'message' })
+        });
+    });
+
+    // Update task complete flag to completed on the blockchain
+    app.put(apiPath + '/completeTask/:taskId', function (req, res) {
+        let taskId = req.params.taskId;
+
+        if (typeof taskId != "string") {
+            res.status(400).json({ error: 'malformed payload'});
+            return;
+        }
+        
+        contract.UpdateTaskCompletionStatus(
+            1,
+            taskId, 
+            {from: accounts[0]})
+        .then( response => {
+            if (response)
+                res.send("success");
+            else
+                res.status(500).json({ error: 'message' });
+        });
     });
     
-    app.put(apiPath + '/locations', function (req, res) {
-        res.send('Got a PUT request at /locations');
+    // Update location data on the blockchain
+    app.put(apiPath + '/location/:locationId', function (req, res) {
+        let locationId = req.params.locationId;
+        let locationAddress = req.body.locationAddress;
+
+        if (typeof locationId != "string" || 
+            typeof locationAddress != "string") {
+            res.status(400).json({ error: 'malformed payload'});
+            return;
+        }
+        
+        contract.UpdateLocationAddress(
+            locationAddress,
+            locationId, 
+            {from: accounts[0]})
+        .then( response => {
+            if (response)
+                res.send("success");
+            else
+                res.status(500).json({ error: 'message' })
+        });
     });
     
-    app.put(apiPath + '/suppliers', function (req, res) {
-        res.send('Got a PUT request at /suppliers');
+    // Update supplier score on the blockchain
+    app.put(apiPath + '/supplierScore/:supplierId', function (req, res) {
+        let supplierId = req.params.supplierId;
+        let score = req.body.score;
+
+        if (typeof supplierId != "string" || 
+            typeof score != "number") {
+            res.status(400).json({ error: 'malformed payload'});
+            return;
+        }
+        
+        contract.UpdateSupplierScore(
+            score,
+            supplierId,
+            {from: accounts[0]})
+        .then( response => {
+            if (response)
+                res.send("success");
+            else
+                res.status(500).json({ error: 'message' })
+        });
+    });
+
+    // Update supplier name on the blockchain
+    app.put(apiPath + '/supplierName/:supplierId', function (req, res) {
+        let supplierId = req.params.supplierId;
+        let name = req.body.supplierName;
+
+        if (typeof supplierId != "string" || 
+            typeof name != "string") {
+            res.status(400).json({ error: 'malformed payload'});
+            return;
+        }
+        
+        contract.UpdateSupplierName(
+            name,
+            supplierId,
+            {from: accounts[0]})
+        .then( response => {
+            if (response)
+                res.send("success");
+            else
+                res.status(500).json({ error: 'message' })
+        });
     });
     
-    app.delete(apiPath + '/tasks', function (req, res) {
-        res.send('Got a DELETE request at /tasks');
+    // Mark task as deleted on the blockchain
+    app.delete(apiPath + '/task/:taskId', function (req, res) {
+        let taskId = req.params.taskId;
+
+        if (typeof taskId != "string") {
+            res.status(400).json({ error: 'malformed payload'});
+            return;
+        }
+        
+        contract.DeleteTask(
+            taskId,  
+            {from: accounts[0]})
+        .then( response => {
+            if (response)
+                res.send("success");
+            else
+                res.status(500).json({ error: 'message' })
+        });
     });
     
-    app.delete(apiPath + '/taskItems', function (req, res) {
-        res.send('Got a DELETE request at /taskItems');
+    // Mark item as deleted on the blockchain
+    app.delete(apiPath + '/taskItem/:itemId', function (req, res) {
+        let itemId = req.params.itemId;
+
+        if (typeof itemId != "string") {
+            res.status(400).json({ error: 'malformed payload'});
+            return;
+        }
+        
+        contract.DeleteItem(
+            itemId,  
+            {from: accounts[0]})
+        .then( response => {
+            if (response)
+                res.send("success");
+            else
+                res.status(500).json({ error: 'message' })
+        });
     });
-    app.delete(apiPath + '/suppliers', function (req, res) {
-        res.send('Got a DELETE request at /suppliers');
+
+    // Mark supplier as deleted on the blockchain
+    app.delete(apiPath + '/supplier/:supplierId', function (req, res) {
+        let supplierId = req.params.supplierId;
+
+        if (typeof supplierId != "string") {
+            res.status(400).json({ error: 'malformed payload'});
+            return;
+        }
+        
+        contract.DeleteSupplier(
+            supplierId,  
+            {from: accounts[0]})
+        .then( response => {
+            if (response)
+                res.send("success");
+            else
+                res.status(500).json({ error: 'message' })
+        });
     });
-    app.delete(apiPath + '/locations', function (req, res) {
-        res.send('Got a DELETE request at /locations');
+
+    // Mark location as deleted on the blockchain
+    app.delete(apiPath + '/location/:locationId', function (req, res) {
+        let locationId = req.params.locationId;
+
+        if (typeof locationId != "string") {
+            res.status(400).json({ error: 'malformed payload'});
+            return;
+        }
+        
+        contract.DeleteLocation(
+            locationId,  
+            {from: accounts[0]})
+        .then( response => {
+            if (response)
+                res.send("success");
+            else
+                res.status(500).json({ error: 'message' })
+        });
     });
 }
 
