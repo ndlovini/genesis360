@@ -16,13 +16,15 @@ function routes(app, contract, accounts) {
         contract.taskCount()
         .then (count => {
             count = count.toNumber();
-            for (var x = 1; x <= count; x++) {
+            for (var x = 0; x <= count; x++) {
                 contract.tasks(x, (err, task) => {
                     tasks.push(task);
                     if (tasks.length === count)
                         res.send(tasks);
                 })
             }
+            if (count == 0)
+                res.send([]);
         });
     });
     
@@ -76,7 +78,7 @@ function routes(app, contract, accounts) {
     
     // Create a new task on the blockchain
     app.post(apiPath + '/tasks', function (req, res) {
-        if (typeof req.body.deliveryDate != "number" || 
+        if (typeof req.body.deliveryDate != "string" || 
             typeof req.body.locationId != "number" || 
             typeof req.body.supplierId != "number" || 
             typeof req.body.taskStatus!= "number") {
@@ -89,8 +91,11 @@ function routes(app, contract, accounts) {
             return;
         }
         
+        // convert datetime to timestamp in seconds for solidity.
+        let dateTimestamp = Math.round(new Date(req.body.deliveryDate).getTime()/1000);
+        
         contract.CreateTask(
-            req.body.deliveryDate, 
+            dateTimestamp, 
             req.body.locationId, 
             req.body.supplierId, 
             req.body.taskStatus, 
