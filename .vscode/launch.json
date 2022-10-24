@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "monitor_evaluate",
+            "cwd": "apps\\monitor_evaluate",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "monitor_evaluate (profile mode)",
+            "cwd": "apps\\monitor_evaluate",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "monitor_evaluate (release mode)",
+            "cwd": "apps\\monitor_evaluate",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}
